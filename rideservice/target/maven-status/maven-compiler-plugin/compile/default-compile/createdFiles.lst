@@ -1,0 +1,5 @@
+edu/escuelaing/rideservice/model/Ride.class
+edu/escuelaing/rideservice/model/RideStatus.class
+edu/escuelaing/rideservice/service/RideService.class
+edu/escuelaing/rideservice/model/Location.class
+edu/escuelaing/lambda/RideServiceHandler.class
