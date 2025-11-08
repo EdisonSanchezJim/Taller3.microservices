@@ -1,0 +1,6 @@
+edu/escuelaing/driverservice/service/DriverService.class
+edu/escuelaing/driverservice/model/Location.class
+edu/escuelaing/driverservice/model/Driver.class
+edu/escuelaing/driverservice/model/DriverStatus.class
+edu/escuelaing/lambda/DriverServiceHandler.class
+edu/escuelaing/driverservice/model/Vehicle.class
