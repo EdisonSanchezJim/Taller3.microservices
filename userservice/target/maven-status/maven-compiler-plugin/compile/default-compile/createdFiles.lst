@@ -1,0 +1,4 @@
+edu/escuelaing/userservice/model/User.class
+edu/escuelaing/lambda/UserServiceHandler.class
+edu/escuelaing/userservice/model/UserStatus.class
+edu/escuelaing/userservice/service/UserService.class
