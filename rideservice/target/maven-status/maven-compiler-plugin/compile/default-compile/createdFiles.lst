@@ -1,7 +1,0 @@
-edu/escuelaing/rideservice/model/Ride.class
-edu/escuelaing/rideservice/model/RideStatus.class
-edu/escuelaing/rideservice/RideServiceApplication.class
-edu/escuelaing/rideservice/service/MessagingConfig.class
-edu/escuelaing/rideservice/model/Location.class
-edu/escuelaing/rideservice/controller/RideController.class
-edu/escuelaing/rideservice/service/RideService.class
