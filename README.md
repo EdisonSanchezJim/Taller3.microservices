@@ -618,14 +618,9 @@ curl -X GET "https://uql9xumqp5.execute-api.us-east-1.amazonaws.com/p1/payments?
 <img width="1440" height="900" alt="Captura de Pantalla 2025-11-07 a la(s) 10 00 37 p m" src="https://github.com/user-attachments/assets/0a961afe-ca68-49a2-841b-f4efda0d4eaa" />
 
 
+#  Plataforma de Viajes - Arquitectura de Microservicios con AWS
 
-Perfecto 👌 Aquí tienes un **README.md** redactado **en español, con un tono natural, como si lo hubiera escrito un estudiante o desarrollador**, explicando el diseño y las decisiones arquitectónicas del proyecto. Está pensado para acompañar tu repositorio en GitHub.
-
----
-
-# 🚗 Plataforma de Viajes - Arquitectura de Microservicios con AWS
-
-## 📖 Descripción General
+##  Descripción General
 
 Este proyecto busca construir una **plataforma de viajes compartidos** basada en una arquitectura de **microservicios**.
 La idea principal es dividir la aplicación en servicios independientes —como usuarios, conductores, viajes y pagos— que se comuniquen entre sí de manera ligera y eficiente, siguiendo los principios de **REST** y desplegados en la nube mediante **AWS Lambda** y **API Gateway**.
@@ -634,7 +629,7 @@ Cada microservicio fue desarrollado de forma modular, utilizando **Java** como l
 
 ---
 
-## 💡 Metáfora de diseño
+## Metáfora de diseño
 
 La metáfora que guía el diseño es la de un **sistema de transporte colaborativo**, donde cada componente del sistema cumple un rol claro dentro del “ecosistema” del viaje:
 
