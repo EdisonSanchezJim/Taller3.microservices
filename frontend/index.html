@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ride-Sharing Platform</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f6fa; margin: 0; padding: 0; }
+    header { background-color: #2f3640; color: white; text-align: center; padding: 20px 0; }
+    main { max-width: 1100px; margin: 20px auto; padding: 10px; }
+    section { background-color: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    h1,h2 { text-align: center; margin-bottom: 15px; }
+    .form-group { display: flex; justify-content: center; margin-bottom: 10px; flex-wrap: wrap; }
+    .form-group input { padding: 10px; margin: 5px; border: 1px solid #ccc; border-radius: 5px; width: 200px; }
+    .form-group button { padding: 10px 20px; border: none; border-radius: 5px; background-color: #4cd137; color: white; font-size: 16px; cursor: pointer; transition: 0.3s; margin: 5px; }
+    .form-group button:hover { background-color: #44bd32; }
+    .list-container { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+    .card { background-color: #f1f2f6; border-radius: 10px; padding: 15px; width: 260px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; }
+    .card button { margin-top: 8px; width: 100%; padding: 8px; font-size: 14px; background-color: #487eb0; color: white; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s; }
+    .card button:hover { background-color: #40739e; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Ride-Sharing Platform</h1>
+</header>
+
+<main>
+  <!-- Users -->
+  <section>
+    <h2>Users</h2>
+    <div class="form-group">
+      <button onclick="addUser()">Add User</button>
+      <button onclick="deleteAllUsers()">Delete All</button>
+    </div>
+    <div id="usersList" class="list-container"></div>
+  </section>
+
+  <!-- Drivers -->
+  <section>
+    <h2>Drivers</h2>
+    <div class="form-group">
+      <button onclick="addDriver()">Add Driver</button>
+      <button onclick="deleteAllDrivers()">Delete All</button>
+    </div>
+    <div id="driversList" class="list-container"></div>
+  </section>
+
+  <!-- Rides -->
+  <section>
+    <h2>Create Ride</h2>
+    <div class="form-group">
+      <input id="riderId" placeholder="Rider ID">
+      <input id="fare" type="number" value="35000" placeholder="Fare">
+      <button onclick="createRide()">Create Ride</button>
+      <button onclick="deleteAllRides()">Delete All</button>
+    </div>
+  </section>
+
+  <!-- Assign Driver -->
+  <section>
+    <h2>Assign Driver</h2>
+    <div class="form-group">
+      <input id="driverId" placeholder="Driver ID">
+      <button onclick="assignDriver()">Assign Driver</button>
+    </div>
+  </section>
+
+  <!-- Lists -->
+  <section>
+    <h2>Rides</h2>
+    <div id="ridesList" class="list-container"></div>
+  </section>
+
+  <section>
+    <h2>Payments</h2>
+    <div id="paymentsList" class="list-container"></div>
+  </section>
+</main>
+
+<script>
+let selectedRideId = null;
+
+// API Gateway endpoints
+const API_USERS = 'https://uql9xumqp5.execute-api.us-east-1.amazonaws.com/p1/users';
+const API_DRIVERS = 'https://uql9xumqp5.execute-api.us-east-1.amazonaws.com/p1/drivers';
+const API_RIDES = 'https://uql9xumqp5.execute-api.us-east-1.amazonaws.com/p1/rides';
+const API_PAYMENTS = 'https://uql9xumqp5.execute-api.us-east-1.amazonaws.com/p1/payments';
+
+// ------------------ Fetch ------------------
+
+// Users
+async function fetchUsers() {
+  const res = await fetch(API_USERS, { method: 'GET' });
+  const users = await res.json();
+  const list = document.getElementById('usersList');
+  list.innerHTML = '';
+  users.forEach(user => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <strong>ID:</strong> ${user.id}<br>
+      <strong>Name:</strong> ${user.name}<br>
+      <strong>Email:</strong> ${user.email}<br>
+      <strong>Status:</strong> ${user.status}
+    `;
+    list.appendChild(card);
+  });
+}
+
+// Drivers
+async function fetchDrivers() {
+  const res = await fetch(API_DRIVERS, { method: 'GET' });
+  const drivers = await res.json();
+  const list = document.getElementById('driversList');
+  list.innerHTML = '';
+  drivers.forEach(driver => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <strong>ID:</strong> ${driver.id}<br>
+      <strong>Name:</strong> ${driver.name}<br>
+      <strong>License:</strong> ${driver.licenseNumber}<br>
+      <strong>Status:</strong> ${driver.status}<br>
+      <strong>Vehicle:</strong> ${driver.vehicle?.model || 'N/A'} - ${driver.vehicle?.plate || 'N/A'}<br>
+      <strong>Location:</strong> (${driver.location?.lat || 0}, ${driver.location?.lng || 0})
+    `;
+    list.appendChild(card);
+  });
+}
+
+// Rides
+async function fetchRides() {
+  const res = await fetch(API_RIDES, { method: 'GET' });
+  const rides = await res.json();
+  const list = document.getElementById('ridesList');
+  list.innerHTML = '';
+  rides.forEach(ride => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <strong>ID:</strong> ${ride.id}<br>
+      <strong>Status:</strong> ${ride.status}<br>
+      <strong>Rider:</strong> ${ride.riderId}<br>
+      <strong>Driver:</strong> ${ride.driverId || 'None'}<br>
+      <strong>Fare:</strong> $${ride.fare.toLocaleString()}
+    `;
+    card.onclick = () => selectedRideId = ride.id;
+
+    const startBtn = document.createElement('button');
+    startBtn.textContent = 'Start Ride';
+    startBtn.onclick = e => { e.stopPropagation(); startRide(ride.id); };
+
+    const completeBtn = document.createElement('button');
+    completeBtn.textContent = 'Complete Ride';
+    completeBtn.onclick = e => { e.stopPropagation(); completeRide(ride.id); };
+
+    card.appendChild(startBtn);
+    card.appendChild(completeBtn);
+    list.appendChild(card);
+  });
+}
+
+// Payments
+async function fetchPayments() {
+  const res = await fetch(API_PAYMENTS, { method: 'GET' });
+  const payments = await res.json();
+  const list = document.getElementById('paymentsList');
+  list.innerHTML = '';
+  payments.forEach(payment => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <strong>ID:</strong> ${payment.id}<br>
+      <strong>Ride:</strong> ${payment.rideId}<br>
+      <strong>User:</strong> ${payment.userId}<br>
+      <strong>Amount:</strong> $${payment.amount.toLocaleString()}<br>
+      <strong>Status:</strong> ${payment.status}
+    `;
+    list.appendChild(card);
+  });
+}
+
+// ------------------ Actions ------------------
+
+// Users
+async function addUser() {
+  const name = prompt("Enter user name:");
+  const email = prompt("Enter user email:");
+  if (!name || !email) return;
+  await fetch(API_USERS, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, status: 'ACTIVE' })
+  });
+  refreshAll();
+}
+
+async function deleteAllUsers() {
+  await fetch(API_USERS, { method: 'DELETE' });
+  refreshAll();
+}
+
+// Drivers
+async function addDriver() {
+  const name = prompt("Enter driver name:");
+  const licenseNumber = prompt("Enter license number:");
+  const model = prompt("Enter vehicle model:");
+  const plate = prompt("Enter vehicle plate:");
+  await fetch(API_DRIVERS, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, licenseNumber, status: 'AVAILABLE', vehicle: { model, plate }, location: { lat:4.6097,lng:-74.0817 } })
+  });
+  refreshAll();
+}
+
+async function deleteAllDrivers() {
+  await fetch(API_DRIVERS, { method: 'DELETE' });
+  refreshAll();
+}
+
+// Rides
+async function createRide() {
+  const riderId = document.getElementById('riderId').value;
+  const fare = parseFloat(document.getElementById('fare').value);
+  if (!riderId || !fare) return alert("Rider ID and Fare required");
+  await fetch(API_RIDES, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ riderId, fare })
+  });
+  refreshAll();
+}
+
+async function deleteAllRides() {
+  await fetch(API_RIDES, { method: 'DELETE' });
+  refreshAll();
+}
+
+async function assignDriver() {
+  const driverId = document.getElementById('driverId').value;
+  if (!selectedRideId || !driverId) return alert("Select ride and driver");
+  await fetch(`${API_RIDES}/${selectedRideId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ driverId })
+  });
+  refreshAll();
+}
+
+async function startRide(rideId) {
+  await fetch(`${API_RIDES}/${rideId}/start`, { method: 'PUT' });
+  refreshAll();
+}
+
+async function completeRide(rideId) {
+  await fetch(`${API_RIDES}/${rideId}/complete`, { method: 'PUT' });
+  refreshAll();
+}
+
+// ------------------ Refresh ------------------
+async function refreshAll() {
+  await fetchUsers();
+  await fetchDrivers();
+  await fetchRides();
+  await fetchPayments();
+}
+
+setInterval(refreshAll, 5000);
+refreshAll();
+</script>
+
+</body>
+</html>
